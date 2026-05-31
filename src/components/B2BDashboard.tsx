@@ -1,108 +1,137 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  TrendingUp, 
-  Wallet, 
-  AlertTriangle, 
-  Sparkles, 
-  CheckCircle2, 
-  ArrowUpRight, 
-  Clock, 
-  Download, 
-  Calendar, 
-  BarChart3, 
+import Confetti from './Confetti';
+import {
+  TrendingUp,
+  Wallet,
+  AlertTriangle,
+  Sparkles,
+  CheckCircle2,
+  Clock,
+  Download,
+  BarChart3,
   RefreshCw,
   FileSpreadsheet,
   FileDown,
-  Info
+  Info,
 } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 
-// Single Stat Card Comp
-const StatCard = ({ title, value, subtext, trend, icon: Icon, color }: any) => (
-  <div className="bg-white border-2 border-pastel-blue/20 p-6 rounded-2xl shadow-xl shadow-pastel-blue/5 relative overflow-hidden group">
-    <div className="flex justify-between items-start mb-4">
-      <div className={cn("p-3 rounded-xl transition-transform group-hover:scale-110", color.bg)}>
-        <Icon className={cn("w-6 h-6", color.text)} />
-      </div>
+/* ─── Stat Card ────────────────────────────────────────────── */
+const StatCard = ({ title, value, subtext, trend, icon: Icon, color, index }: any) => (
+  <motion.div
+    initial={{ opacity: 0, y: 24, scale: 0.95 }}
+    animate={{ opacity: 1, y: 0,  scale: 1 }}
+    transition={{ delay: index * 0.08, type: 'spring', stiffness: 300, damping: 22 }}
+    whileHover={{ y: -4, scale: 1.015 }}
+    className="bg-white/80 backdrop-blur-sm border-2 border-pastel-blue/15 p-6 rounded-2xl shadow-lg shadow-pastel-blue/5 relative overflow-hidden group cursor-default"
+  >
+    {/* Background glow */}
+    <div className={cn('absolute -top-8 -right-8 w-24 h-24 rounded-full blur-2xl opacity-40 transition-opacity group-hover:opacity-70', color.glow)} />
+
+    <div className="flex justify-between items-start mb-4 relative z-10">
+      <motion.div
+        className={cn('p-3 rounded-xl', color.bg)}
+        whileHover={{ rotate: [0, -8, 8, 0] }}
+        transition={{ duration: 0.4 }}
+      >
+        <Icon className={cn('w-5 h-5', color.text)} />
+      </motion.div>
       {trend && (
-        <span className={cn(
-          "text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm", 
-          trend > 0 ? "bg-pastel-success text-pastel-text" : "bg-pastel-danger/20 text-pastel-danger"
-        )}>
-          <TrendingUp size={12} className={trend < 0 ? "rotate-180" : ""} />
+        <motion.span
+          initial={{ scale: 0, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: index * 0.08 + 0.2, type: 'spring' }}
+          className={cn(
+            'text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm',
+            trend > 0 ? 'bg-[#e0efea] text-[#3d6b54]' : 'bg-red-100 text-red-600'
+          )}
+        >
+          <TrendingUp size={11} className={trend < 0 ? 'rotate-180' : ''} />
           {trend > 0 ? '+' : ''}{trend}%
-        </span>
+        </motion.span>
       )}
     </div>
-    <h3 className="text-pastel-muted text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1">{title}</h3>
-    <div className="text-2xl sm:text-3xl font-black text-pastel-text mb-1">{value}</div>
-    <p className="text-pastel-muted text-[10px] sm:text-xs flex items-center gap-1">
-      <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-ping"></span>
+
+    <h3 className="text-pastel-muted text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 relative z-10">{title}</h3>
+    <div className="text-2xl sm:text-3xl font-black text-pastel-text mb-1.5 relative z-10">{value}</div>
+    <p className="text-pastel-muted text-[10px] sm:text-xs flex items-center gap-1.5 relative z-10">
+      <span className="w-1.5 h-1.5 rounded-full bg-[#5a8f70] animate-pulse flex-shrink-0"></span>
       {subtext}
     </p>
-  </div>
+  </motion.div>
 );
 
-// Suggestion Row Comp for Interactive Pricing
+/* ─── Suggestion Row ───────────────────────────────────────── */
 const SuggestionItem = ({ id, name, emoji, expiry, discount, count, isPushed, onPush }: any) => (
-  <div className={cn(
-    "flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border-2 transition-all gap-4",
-    isPushed 
-      ? "bg-pastel-success/10 border-pastel-success/30" 
-      : "bg-pastel-bg/40 border-transparent hover:border-pastel-pink/30 hover:bg-white"
-  )}>
+  <motion.div
+    layout
+    initial={{ opacity: 0, x: -12 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ type: 'spring', stiffness: 300, damping: 24 }}
+    className={cn(
+      'flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 rounded-xl border-2 transition-all gap-4',
+      isPushed
+        ? 'bg-[#f2f8f4] border-[#c5dfd3] shadow-sm shadow-[#c5dfd3]/50'
+        : 'bg-pastel-bg/40 border-transparent hover:border-pastel-pink/25 hover:bg-white hover:shadow-sm'
+    )}
+  >
     <div className="flex items-center gap-4">
-      <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm border border-gray-100">
+      <motion.div
+        whileHover={{ scale: 1.15, rotate: 5 }}
+        className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-2xl shadow-sm border border-gray-100 flex-shrink-0"
+      >
         {emoji}
-      </div>
+      </motion.div>
       <div>
         <h4 className="font-extrabold text-sm sm:text-base text-pastel-text">
           {name} <span className="text-pastel-muted font-normal text-xs sm:text-sm">({count} unités)</span>
         </h4>
         <div className="flex items-center gap-2 mt-1">
-          <Clock size={12} className={expiry === 'Aujourd\'hui' ? "text-red-500" : "text-amber-500"} />
-          <span className={cn("text-xs font-bold", expiry === 'Aujourd\'hui' ? "text-red-500" : "text-amber-500")}>
+          <Clock size={11} className={expiry === "Aujourd'hui" ? 'text-red-500' : 'text-amber-500'} />
+          <span className={cn('text-xs font-bold', expiry === "Aujourd'hui" ? 'text-red-500' : 'text-amber-500')}>
             Périme {expiry}
           </span>
         </div>
       </div>
     </div>
+
     <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4">
       <div className="text-left sm:text-right">
         <div className="text-[9px] text-pastel-muted uppercase font-bold tracking-wider">Réduction active</div>
         <div className={cn(
-          "font-extrabold text-sm px-2 py-0.5 rounded inline-block",
-          isPushed ? "bg-pastel-success text-pastel-text" : "bg-pastel-danger/10 text-pastel-danger"
+          'font-extrabold text-sm px-2.5 py-0.5 rounded-lg inline-block',
+          isPushed ? 'bg-[#e0efea] text-[#3d6b54]' : 'bg-red-50 text-red-600'
         )}>
           -{discount}%
         </div>
       </div>
-      <button 
+      <motion.button
         disabled={isPushed}
         onClick={() => onPush(id)}
+        whileHover={isPushed ? {} : { scale: 1.05, y: -1 }}
+        whileTap={isPushed ? {} : { scale: 0.95 }}
         className={cn(
-          "px-4 py-2 rounded-full text-xs font-bold shadow-md transition-all active:scale-95 shrink-0",
-          isPushed 
-            ? "bg-pastel-success/20 text-pastel-text border border-pastel-success/30 cursor-not-allowed" 
-            : "bg-pastel-pink hover:bg-pastel-pink-hover text-white shadow-pastel-pink/15 cursor-pointer"
+          'px-4 py-2 rounded-full text-xs font-bold shadow-md transition-all shrink-0 btn-shine',
+          isPushed
+            ? 'bg-[#e0efea] text-[#3d6b54] border border-[#c5dfd3] cursor-not-allowed shadow-none'
+            : 'bg-gradient-to-r from-pastel-pink to-pastel-pink-hover text-white shadow-pastel-pink/20 cursor-pointer'
         )}
       >
-        {isPushed ? "Sponsorisé ✅" : "Pousser l'offre"}
-      </button>
+        {isPushed ? '✅ Offre Diffusée' : "Diffuser l'Offre"}
+      </motion.button>
     </div>
-  </div>
+  </motion.div>
 );
 
-// Historical Report Record Comp
-const ReportRecord = ({ name, date, size, downloadUrl }: any) => {
+/* ─── Report Record ────────────────────────────────────────── */
+const ReportRecord = ({ name, date, size }: any) => {
   const [downloading, setDownloading] = useState(false);
-  
+
   const triggerDownload = () => {
     setDownloading(true);
     setTimeout(() => {
       setDownloading(false);
-      // Beautiful mock download
       const content = `Date,Item,Gain,Saved(kg)\n2026-05,Total,1240,310`;
       const blob = new Blob([content], { type: 'text/csv' });
       const url = window.URL.createObjectURL(blob);
@@ -114,217 +143,221 @@ const ReportRecord = ({ name, date, size, downloadUrl }: any) => {
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-pastel-bg/20 rounded-xl border border-gray-100 hover:border-pastel-blue/30 hover:bg-white transition-all text-xs">
+    <motion.div
+      whileHover={{ x: 2 }}
+      className="flex items-center justify-between p-3.5 bg-pastel-bg/30 rounded-xl border border-gray-100 hover:border-pastel-blue/30 hover:bg-white transition-all text-xs group"
+    >
       <div className="flex items-center gap-3">
-        <div className="w-9 h-9 bg-pastel-blue/5 rounded-lg flex items-center justify-center text-pastel-blue">
-          <FileSpreadsheet size={16} />
+        <div className="w-9 h-9 bg-pastel-blue/8 rounded-lg flex items-center justify-center text-pastel-blue group-hover:bg-pastel-blue/15 transition-colors">
+          <FileSpreadsheet size={15} />
         </div>
         <div>
           <div className="font-bold text-pastel-text">{name}</div>
           <div className="text-[10px] text-pastel-muted">{date} • {size}</div>
         </div>
       </div>
-      <button 
+      <motion.button
         onClick={triggerDownload}
         disabled={downloading}
+        whileHover={downloading ? {} : { scale: 1.05 }}
+        whileTap={downloading ? {} : { scale: 0.95 }}
         className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold border-2 transition-all active:scale-95 text-[10px]",
-          downloading 
-            ? "border-pastel-blue bg-pastel-blue/10 text-pastel-blue" 
-            : "border-gray-150 text-pastel-text hover:border-pastel-blue hover:text-pastel-blue bg-white cursor-pointer"
+          'flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold border-2 transition-all text-[10px]',
+          downloading
+            ? 'border-pastel-blue bg-pastel-blue/10 text-pastel-blue'
+            : 'border-gray-150 text-pastel-text hover:border-pastel-blue hover:text-pastel-blue bg-white cursor-pointer'
         )}
       >
         {downloading ? (
-          <>
-            <RefreshCw size={12} className="animate-spin" />
-            Génération...
-          </>
+          <><RefreshCw size={11} className="animate-spin" /> Génération...</>
         ) : (
-          <>
-            <Download size={12} />
-            Télécharger
-          </>
+          <><Download size={11} /> Télécharger</>
         )}
-      </button>
-    </div>
+      </motion.button>
+    </motion.div>
   );
 };
 
+/* ─── Main Component ───────────────────────────────────────── */
 export default function B2BDashboard() {
   const [activeRange, setActiveRange] = useState<'week' | 'month' | 'quarter'>('week');
   const [hoveredDataIndex, setHoveredDataIndex] = useState<number | null>(null);
   const [pushedOffers, setPushedOffers] = useState<string[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
   const [apiLogs, setApiLogs] = useState<string[]>([
-    "09:12 - Connexion établie avec la caisse principale #01",
-    "09:18 - Scan intelligent : détection de 12 filets de Poulet DLC saine",
-    "09:30 - Notification géolocalisée envoyée à 128 clients proches",
+    '09:12 - Connexion établie avec la caisse principale #01',
+    '09:18 - Scan intelligent : détection de 12 filets de Poulet DLC saine',
+    '09:30 - Notification géolocalisée envoyée à 128 clients proches',
   ]);
 
-  // Handle mock dynamic product pushes
   const handlePushOffer = (id: string, name: string) => {
-    setPushedOffers(prev => [...prev, id]);
-    const cleanTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    setApiLogs(prev => [
-      `${cleanTime} - OFFRE POUSSÉE : "${name}" sponsorisée à -50% dans le secteur`,
-      ...prev
-    ]);
+    setPushedOffers((prev) => [...prev, id]);
+    const t = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    setApiLogs((prev) => [`${t} - OFFRE POUSSÉE : "${name}" sponsorisée à -50% dans le secteur`, ...prev]);
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 3200);
   };
 
-  // SVG Chart data
   const chartsData = {
     week: [
-      { label: 'Lun', saved: 12, cash: 85, color: '#fca5a5' },
-      { label: 'Mar', saved: 18, cash: 120, color: '#93c5fd' },
-      { label: 'Mer', saved: 15, cash: 105, color: '#fca5a5' },
-      { label: 'Jeu', saved: 28, cash: 164, color: '#93c5fd' },
-      { label: 'Ven', saved: 32, cash: 198, color: '#a7f3d0' },
-      { label: 'Sam', saved: 25, cash: 145, color: '#a7f3d0' },
-      { label: 'Dim', saved: 12, cash: 78, color: '#93c5fd' }
+      { label: 'Lun', saved: 12,  cash: 85,   color: '#b0d5be' },
+      { label: 'Mar', saved: 18,  cash: 120,  color: '#7ab598' },
+      { label: 'Mer', saved: 15,  cash: 105,  color: '#b0d5be' },
+      { label: 'Jeu', saved: 28,  cash: 164,  color: '#5a8f70' },
+      { label: 'Ven', saved: 32,  cash: 198,  color: '#4a7860' },
+      { label: 'Sam', saved: 25,  cash: 145,  color: '#5a8f70' },
+      { label: 'Dim', saved: 12,  cash: 78,   color: '#b0d5be' },
     ],
     month: [
-      { label: 'Sem 1', saved: 85, cash: 480, color: '#93c5fd' },
-      { label: 'Sem 2', saved: 110, cash: 620, color: '#a7f3d0' },
-      { label: 'Sem 3', saved: 95, cash: 540, color: '#fca5a5' },
-      { label: 'Sem 4', saved: 142, cash: 845, color: '#a7f3d0' }
+      { label: 'Sem 1', saved: 85,  cash: 480,  color: '#b0d5be' },
+      { label: 'Sem 2', saved: 110, cash: 620,  color: '#5a8f70' },
+      { label: 'Sem 3', saved: 95,  cash: 540,  color: '#7ab598' },
+      { label: 'Sem 4', saved: 142, cash: 845,  color: '#4a7860' },
     ],
     quarter: [
-      { label: 'Janvier', saved: 320, cash: 1800, color: '#93c5fd' },
-      { label: 'Février', saved: 290, cash: 1650, color: '#fca5a5' },
-      { label: 'Mars', saved: 410, cash: 2340, color: '#a7f3d0' },
-      { label: 'Avril', saved: 480, cash: 2900, color: '#a7f3d0' }
-    ]
+      { label: 'Janvier',  saved: 320, cash: 1800, color: '#b0d5be' },
+      { label: 'Février',  saved: 290, cash: 1650, color: '#7ab598' },
+      { label: 'Mars',     saved: 410, cash: 2340, color: '#5a8f70' },
+      { label: 'Avril',    saved: 480, cash: 2900, color: '#4a7860' },
+    ],
   };
 
   const currentChart = chartsData[activeRange];
-  const maxVal = Math.max(...currentChart.map(d => d.saved)) * 1.15;
+  const maxVal = Math.max(...currentChart.map((d) => d.saved)) * 1.15;
 
   return (
-    <div className="space-y-12 animate-fade-in">
-      {/* Console Header */}
-      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pastel-blue/10 pb-6">
+    <div className="space-y-12">
+      <Confetti active={showConfetti} palette="green" />
+
+      {/* ── Header ────────────────────────────────────────────── */}
+      <motion.header
+        initial={{ opacity: 0, y: -12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pastel-blue/10 pb-6"
+      >
         <div>
           <div className="flex items-center gap-2 mb-1.5 justify-center sm:justify-start">
-            <span className="w-2.5 h-2.5 rounded-full bg-pastel-success animate-pulse"></span>
+            <motion.span
+              className="w-2.5 h-2.5 rounded-full bg-[#5a8f70]"
+              animate={{ scale: [1, 1.3, 1], opacity: [1, 0.6, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
             <span className="text-[10px] font-bold text-pastel-muted uppercase tracking-wider font-mono">
               Console Partenaire Active • ID: #RIF-PARIS-12
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-pastel-text text-center sm:text-left">
-            Rapports & Tarification Dynamique
+            Rapports & <span className="gradient-text-blue">Tarification Dynamique</span>
           </h1>
         </div>
         <div className="flex gap-2 justify-center shrink-0">
-          <div className="bg-white px-4 py-2 rounded-xl text-xs font-bold border border-gray-150 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-pastel-success"></span>
+          <div className="bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl text-xs font-bold border border-[#d1e8db] flex items-center gap-2 text-[#3d6b54] shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-[#5a8f70] animate-pulse"></span>
             Caisse Connectée
           </div>
-          <button 
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => {
-              const cleanTime = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-              setApiLogs(prev => [`${cleanTime} - Synchronisation forcée : 0 défauts répertoriés`, ...prev]);
+              const t = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+              setApiLogs((prev) => [`${t} - Synchronisation forcée : 0 défauts répertoriés`, ...prev]);
             }}
-            className="p-2 sm:px-3 sm:py-2 bg-pastel-blue text-white rounded-xl text-xs font-bold hover:bg-pastel-blue/90 cursor-pointer active:scale-95 transition-all flex items-center gap-1.5 shadow"
+            className="p-2 sm:px-3 sm:py-2 bg-gradient-to-r from-pastel-blue to-pastel-blue-hover text-white rounded-xl text-xs font-bold cursor-pointer flex items-center gap-1.5 shadow-md shadow-pastel-blue/20 btn-shine"
           >
             <RefreshCw size={13} />
             <span className="hidden sm:inline">Rafraîchir</span>
-          </button>
+          </motion.button>
         </div>
-      </header>
+      </motion.header>
 
-      {/* Real-Time statistics */}
+      {/* ── Stat Cards ────────────────────────────────────────── */}
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard 
-          title="Nourriture Sauvée" 
-          value="142.3 kg" 
+        <StatCard
+          index={0}
+          title="Denrées Préservées"
+          value="142.3 kg"
           subtext="Mise à jour en temps réel"
           trend={12.4}
           icon={TrendingUp}
-          color={{ bg: 'bg-pastel-success/25', text: 'text-pastel-text' }}
+          color={{ bg: 'bg-[#f2f8f4]', text: 'text-[#4a7860]', glow: 'bg-[#c5dfd3]' }}
         />
-        <StatCard 
-          title="Revenus Capturés" 
-          value="845.20 €" 
+        <StatCard
+          index={1}
+          title="Revenus Capturés"
+          value="845.20 €"
           subtext="Ventes d'invendus triés"
           trend={8.2}
           icon={Wallet}
-          color={{ bg: 'bg-pastel-blue/20', text: 'text-pastel-text' }}
+          color={{ bg: 'bg-pastel-blue/15', text: 'text-pastel-blue', glow: 'bg-pastel-blue/30' }}
         />
-        <StatCard 
-          title="Alerte Stock Critique" 
-          value="124.50 €" 
-          subtext="Valeur restante en DLC courte"
-          trend={-15.0} // good trend representing lower waste left on shelf
+        <StatCard
+          index={2}
+          title="Stocks en Péremption"
+          value="124.50 €"
+          subtext="Valeur à traiter — DLC critique"
+          trend={-15.0}
           icon={AlertTriangle}
-          color={{ bg: 'bg-pastel-danger/25', text: 'text-pastel-danger' }}
+          color={{ bg: 'bg-red-50', text: 'text-red-500', glow: 'bg-red-200' }}
         />
       </section>
 
-      {/* Main Core Columns */}
+      {/* ── Two Columns ───────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* LEFT COLUMN: Deep Dynamic Inventory Actions & AI Suggestions */}
-        <div className="lg:col-span-7 bg-white border-2 border-pastel-blue/15 rounded-3xl p-6 sm:p-8 shadow-xl shadow-pastel-blue/5 flex flex-col justify-between">
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex items-center gap-2.5">
-                <span className="p-2 bg-pastel-pink text-white rounded-xl">
-                  <Sparkles size={18} className="fill-current" />
-                </span>
-                <div>
-                  <h2 className="text-lg font-extrabold text-pastel-text">Moteur de Tarification Intelligente</h2>
-                  <p className="text-[10px] sm:text-xs text-pastel-muted">Prenez des actions correctives instantanées sur vos dates courtes</p>
-                </div>
-              </div>
-            </div>
 
-            <div className="space-y-4">
-              <SuggestionItem 
-                id="yog-1"
-                emoji="🥛"
-                name="Lot de Yaourts Bio Nature"
-                count={30}
-                expiry="Aujourd'hui"
-                discount={50}
-                isPushed={pushedOffers.includes('yog-1')}
-                onPush={(id: string) => handlePushOffer(id, 'Yaourts Bio')}
-              />
-              <SuggestionItem 
-                id="poulet-1"
-                emoji="🍗"
-                name="Ailes de Poulet Fermier Label Rouge"
-                count={12}
-                expiry="Demain"
-                discount={30}
-                isPushed={pushedOffers.includes('poulet-1')}
-                onPush={(id: string) => handlePushOffer(id, 'Ailes de Poulet')}
-              />
-              <SuggestionItem 
-                id="salade-1"
-                emoji="🥬"
-                name="Sachets de Salade Mélangée Croquante"
-                count={15}
-                expiry="Aujourd'hui"
-                discount={40}
-                isPushed={pushedOffers.includes('salade-1')}
-                onPush={(id: string) => handlePushOffer(id, 'Salade Mélangée')}
-              />
+        {/* LEFT: AI Pricing Engine */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="lg:col-span-7 bg-white/80 backdrop-blur-sm border-2 border-pastel-blue/12 rounded-3xl p-6 sm:p-8 shadow-xl shadow-pastel-blue/5 flex flex-col"
+        >
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-2.5">
+              <div className="p-2 bg-gradient-to-br from-pastel-pink to-pastel-pink-hover text-white rounded-xl shadow-md shadow-pastel-pink/25">
+                <Sparkles size={17} className="fill-current" />
+              </div>
+              <div>
+                <h2 className="text-base font-extrabold text-pastel-text">Moteur de Tarification Intelligente</h2>
+                <p className="text-[10px] text-pastel-muted">Prenez des actions correctives instantanées</p>
+              </div>
             </div>
           </div>
 
-          {/* Connected Live Stream Output Console */}
+          <div className="space-y-3 flex-1">
+            {[
+              { id: 'yog-1',    emoji: '🥛', name: 'Lot de Yaourts Bio Nature',             count: 30, expiry: "Aujourd'hui", discount: 50 },
+              { id: 'poulet-1', emoji: '🍗', name: 'Ailes de Poulet Fermier Label Rouge',   count: 12, expiry: 'Demain',      discount: 30 },
+              { id: 'salade-1', emoji: '🥬', name: 'Sachets de Salade Mélangée Croquante',  count: 15, expiry: "Aujourd'hui", discount: 40 },
+            ].map((item) => (
+              <SuggestionItem
+                key={item.id}
+                {...item}
+                isPushed={pushedOffers.includes(item.id)}
+                onPush={(id: string) => handlePushOffer(id, item.name)}
+              />
+            ))}
+          </div>
+
+          {/* Live Console */}
           <div className="mt-8 pt-6 border-t border-pastel-blue/10">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-pastel-text mb-3 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-pastel-blue animate-ping"></span>
-              Fils d'événements et Sync locale
+            <h3 className="text-xs font-bold uppercase tracking-wider text-pastel-text mb-3 flex items-center gap-2">
+              <motion.span
+                className="w-2 h-2 rounded-full bg-pastel-blue"
+                animate={{ scale: [1, 1.4, 1], opacity: [1, 0.5, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              />
+              Journal d'Activité en Temps Réel
             </h3>
-            <div className="bg-pastel-bg/50 p-3 sm:p-4 rounded-xl border border-gray-100 font-mono text-[9px] sm:text-[10px] text-pastel-text space-y-1.5 h-32 overflow-y-auto">
+            <div className="bg-slate-950 p-3 sm:p-4 rounded-xl border border-slate-800 font-mono text-[9px] sm:text-[10px] space-y-1.5 h-32 overflow-y-auto custom-scrollbar">
               <AnimatePresence>
                 {apiLogs.map((log, idx) => (
-                  <motion.div 
-                    initial={{ opacity: 0, x: -5 }} 
-                    animate={{ opacity: 1, x: 0 }} 
-                    key={idx} 
-                    className="truncate hover:text-pastel-blue transition-colors border-l-2 border-pastel-blue/20 pl-2 py-0.5"
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    key={idx}
+                    className="truncate border-l-2 border-pastel-blue/40 pl-2 py-0.5"
+                    style={{ color: idx === 0 ? '#7ab598' : '#94a3b8' }}
                   >
                     {log}
                   </motion.div>
@@ -332,116 +365,136 @@ export default function B2BDashboard() {
               </AnimatePresence>
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* RIGHT COLUMN: Rapport Complet & Analytics */}
-        <div id="pro-full-report" className="lg:col-span-5 bg-white border-2 border-pastel-blue/15 rounded-3xl p-6 sm:p-8 shadow-xl shadow-pastel-blue/5 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-2">
-                <span className="p-2 bg-pastel-blue text-white rounded-xl">
-                  <BarChart3 size={18} />
-                </span>
-                <h2 className="text-lg font-extrabold text-pastel-text">Rapport Complet 📊</h2>
+        {/* RIGHT: Reports & Chart */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          id="pro-full-report"
+          className="lg:col-span-5 bg-white/80 backdrop-blur-sm border-2 border-pastel-blue/12 rounded-3xl p-6 sm:p-8 shadow-xl shadow-pastel-blue/5 flex flex-col"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-2 bg-gradient-to-br from-pastel-blue to-pastel-blue-hover text-white rounded-xl shadow-md shadow-pastel-blue/25">
+                <BarChart3 size={17} />
               </div>
-              
-              {/* Filter controls */}
-              <div className="flex items-center gap-1 bg-pastel-bg p-1 rounded-xl">
-                {[
-                  { id: 'week', label: 'Sem' },
-                  { id: 'month', label: 'Mois' },
-                  { id: 'quarter', label: 'Trim' },
-                ].map(r => (
-                  <button
-                    key={r.id}
-                    onClick={() => {
-                      setActiveRange(r.id as any);
-                      setHoveredDataIndex(null);
-                    }}
-                    className={cn(
-                      "text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all",
-                      activeRange === r.id 
-                        ? "bg-pastel-blue text-white shadow-sm" 
-                        : "text-pastel-muted hover:text-pastel-text cursor-pointer"
-                    )}
+              <h2 className="text-base font-extrabold text-pastel-text">Rapport Complet 📊</h2>
+            </div>
+            {/* Range Toggle */}
+            <div className="flex items-center gap-0.5 bg-pastel-bg p-1 rounded-xl border border-gray-100">
+              {[{ id: 'week', label: 'Sem' }, { id: 'month', label: 'Mois' }, { id: 'quarter', label: 'Trim' }].map((r) => (
+                <button
+                  key={r.id}
+                  onClick={() => { setActiveRange(r.id as any); setHoveredDataIndex(null); }}
+                  className={cn(
+                    'relative text-[10px] font-bold px-2.5 py-1 rounded-lg transition-colors',
+                    activeRange === r.id ? 'text-white' : 'text-pastel-muted hover:text-pastel-text cursor-pointer'
+                  )}
+                >
+                  {activeRange === r.id && (
+                    <motion.div
+                      layoutId="chart-range-bg"
+                      className="absolute inset-0 bg-pastel-blue rounded-lg shadow-sm"
+                      transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                    />
+                  )}
+                  <span className="relative z-10">{r.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-pastel-muted text-xs mb-5">
+            Survolez chaque barre pour inspecter les détails.
+          </p>
+
+          {/* Bar Chart */}
+          <div className="relative border border-slate-100 bg-gradient-to-b from-pastel-bg/20 to-white/50 rounded-2xl p-4 mb-6 flex-1 min-h-[180px]">
+            <div className="h-44 w-full flex items-end justify-between gap-2 pt-8">
+              {currentChart.map((h, i) => {
+                const pct = (h.saved / maxVal) * 100;
+                const isHovered = hoveredDataIndex === i;
+                return (
+                  <div
+                    key={`${activeRange}-${i}`}
+                    className="flex-1 flex flex-col items-center gap-1.5 h-full justify-end cursor-pointer"
+                    onMouseEnter={() => setHoveredDataIndex(i)}
+                    onMouseLeave={() => setHoveredDataIndex(null)}
                   >
-                    {r.label}
-                  </button>
-                ))}
-              </div>
+                    <div className="w-full relative flex justify-center items-end h-full">
+                      <motion.div
+                        className="w-full sm:w-8 rounded-t-lg relative overflow-hidden"
+                        style={{
+                          backgroundColor: h.color,
+                          boxShadow: isHovered ? `0 -6px 24px ${h.color}99` : 'none',
+                        }}
+                        initial={{ height: 0 }}
+                        animate={{ height: `${pct}%` }}
+                        transition={{ type: 'spring', stiffness: 200, damping: 20, delay: i * 0.05 }}
+                      >
+                        {/* Shine on hover */}
+                        {isHovered && (
+                          <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            className="absolute inset-0 bg-white/20"
+                          />
+                        )}
+                      </motion.div>
+                    </div>
+                    <span className="text-[9px] font-bold text-pastel-muted">{h.label}</span>
+                  </div>
+                );
+              })}
             </div>
 
-            <p className="text-pastel-muted text-xs mb-6">
-              Analysez l'évolution de la nourriture sauvée et des gains perçus par mois. Survolez chaque segment pour inspecter les détails journaliers.
-            </p>
-
-            {/* Premium Interactive SVG Chart */}
-            <div className="relative border border-slate-100 bg-pastel-bg/10 rounded-2xl p-4 mb-6">
-              <div className="h-44 w-full flex items-end justify-between gap-2 pt-6">
-                {currentChart.map((h, i) => {
-                  const percentage = (h.saved / maxVal) * 100;
-                  const isHovered = hoveredDataIndex === i;
-                  return (
-                    <div 
-                      key={i} 
-                      className="flex-1 flex flex-col items-center gap-2 h-full justify-end group transition-all cursor-pointer"
-                      onMouseEnter={() => setHoveredDataIndex(i)}
-                      onMouseLeave={() => setHoveredDataIndex(null)}
-                    >
-                      {/* Bar portion */}
-                      <div className="w-full relative flex justify-center items-end h-full">
-                        <motion.div 
-                          className="w-full sm:w-8 rounded-t-lg transition-all"
-                          style={{ 
-                            height: `${percentage}%`,
-                            backgroundColor: h.color,
-                            boxShadow: isHovered ? '0 10px 15px -3px rgba(147, 197, 253, 0.4)' : 'none'
-                          }}
-                          initial={{ height: 0 }}
-                          animate={{ height: `${percentage}%` }}
-                        />
-                      </div>
-                      <span className="text-[9px] font-bold text-pastel-muted">{h.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Dynamic tooltip box inside the chart */}
-              <div className="absolute top-2 left-2 right-2 flex justify-between items-center bg-white/90 backdrop-blur border border-pastel-blue/10 p-2 rounded-xl text-[10px] pointer-events-none transition-all duration-200">
+            {/* Tooltip */}
+            <div className="absolute top-2 left-2 right-2 flex justify-between items-center bg-white/90 backdrop-blur border border-pastel-blue/10 p-2 rounded-xl text-[10px] pointer-events-none shadow-sm">
+              <AnimatePresence mode="wait">
                 {hoveredDataIndex !== null ? (
-                  <>
+                  <motion.div
+                    key="data"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex w-full justify-between items-center"
+                  >
                     <div className="font-bold text-pastel-text">{currentChart[hoveredDataIndex].label}</div>
-                    <div className="flex gap-4">
-                      <span className="text-green-600 font-bold">♻️ {currentChart[hoveredDataIndex].saved} kg</span>
+                    <div className="flex gap-3">
+                      <span className="text-[#4a7860] font-bold">♻️ {currentChart[hoveredDataIndex].saved} kg</span>
                       <span className="text-pastel-pink font-bold">💶 {currentChart[hoveredDataIndex].cash} €</span>
                     </div>
-                  </>
+                  </motion.div>
                 ) : (
-                  <>
+                  <motion.div
+                    key="hint"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="flex w-full justify-between items-center"
+                  >
                     <div className="flex items-center gap-1 text-pastel-muted font-medium">
-                      <Info size={12} className="text-pastel-blue" />
-                      Glissez sur une barre pour voir le détail
+                      <Info size={11} className="text-pastel-blue" />
+                      Survolez une barre
                     </div>
-                    <span className="font-bold text-pastel-blue font-mono">LIVE FEEDBACK</span>
-                  </>
+                    <span className="font-bold text-pastel-blue font-mono text-[9px]">LIVE</span>
+                  </motion.div>
                 )}
-              </div>
+              </AnimatePresence>
             </div>
           </div>
 
-          {/* Historical Download list */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold text-pastel-muted uppercase tracking-wider mb-2 flex items-center gap-1">
-              <FileDown size={14} /> Bilans certifiés mensuels
+          {/* Downloads */}
+          <div className="space-y-2">
+            <h3 className="text-xs font-bold text-pastel-muted uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <FileDown size={13} /> Bilans certifiés mensuels
             </h3>
-            <div className="space-y-2">
-              <ReportRecord name="Bilan RSE - Avril 2026" date="Publié le 01/05 • Valide RSE" size="1.2 MB .CSV" />
-              <ReportRecord name="Synthèse Financière - Q1 2026" date="Publié le 15/04 • Fiscal" size="4.8 MB .CSV" />
-            </div>
+            <ReportRecord name="Bilan RSE - Avril 2026"         date="Publié le 01/05 • Valide RSE" size="1.2 MB .CSV" />
+            <ReportRecord name="Synthèse Financière - Q1 2026"  date="Publié le 15/04 • Fiscal"      size="4.8 MB .CSV" />
           </div>
-        </div>
-
+        </motion.div>
       </div>
     </div>
   );
