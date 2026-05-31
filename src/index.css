@@ -1,0 +1,47 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  /* Pastel Palette */
+  --color-pastel-bg: #fff5f7;
+  --color-pastel-card: #ffffff;
+  --color-pastel-pink: #ffc1d6;
+  --color-pastel-pink-hover: #ffacc7;
+  --color-pastel-blue: #a7d8f5;
+  --color-pastel-blue-hover: #90cded;
+  --color-pastel-text: #555555;
+  --color-pastel-muted: #888888;
+  --color-pastel-danger: #ffcccc;
+  --color-pastel-warning: #ffe599;
+  --color-pastel-success: #b8e9c0;
+}
+
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}
+
+/* Custom scrollbar for the Pastel SaaS look */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-pastel-pink/30 rounded-full hover:bg-pastel-pink/50 transition-colors;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
